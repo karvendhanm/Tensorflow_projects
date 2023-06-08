@@ -1,10 +1,12 @@
 import io
 import os
 import pandas as pd
+
 import subprocess
 import tensorflow as tf
 
 from advanced_NLP_tensorflow2 import utils
+
 
 if not os.path.exists('./NLP_data/SMSSpamCollection'):
     url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip'
@@ -27,6 +29,8 @@ df = pd.DataFrame(spam_dataset, columns=['Spam', 'Message'])
 df['Length'] = df['Message'].apply(utils.message_length)
 df['Capitals'] = df['Message'].apply(utils.num_capitals)
 df['Punctuation'] = df['Message'].apply(utils.num_punctuation)
+df['Punctuation'] = df['Message'].apply(utils.num_punctuation)
+df['Words'] = df['Message'].apply(utils.word_counts)
 df.describe()
 
 df['Spam'].value_counts(normalize=True)
@@ -42,11 +46,11 @@ test['Spam'].value_counts(normalize=True)
 train.reset_index(inplace=True, drop=True)
 test.reset_index(inplace=True, drop=True)
 
-x_train, y_train = train[['Length', 'Capitals', 'Punctuation']], train[['Spam']]
-x_test, y_test = test[['Length', 'Capitals', 'Punctuation']], test[['Spam']]
+x_train, y_train = train[['Length', 'Capitals', 'Punctuation', 'Words']], train[['Spam']]
+x_test, y_test = test[['Length', 'Capitals', 'Punctuation', 'Words']], test[['Spam']]
 
 # Modeling normalized data
-model = utils.make_model()
+model = utils.make_model(input_dims=4)
 model.fit(x_train, y_train, epochs=10, batch_size=10)
 
 model.evaluate(x_test, y_test)
@@ -60,4 +64,10 @@ y_train_pred[~mask] = 0
 
 tf.math.confusion_matrix(tf.constant(y_train.Spam), y_train_pred)
 
-# TOkenization
+train.loc[train.Spam == 1].describe()
+train.loc[train.Spam == 0].describe()
+
+
+
+
+

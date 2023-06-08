@@ -1,5 +1,10 @@
 import re
+import stopwordsiso as stopwords
+import stanfordnlp as snlp
 import tensorflow as tf
+
+# tokenize processor from stanfordnlp
+en = snlp.Pipeline(lang='en', processors='tokenize')
 
 def message_length(x):
     """
@@ -45,3 +50,20 @@ def make_model(input_dims=3, num_units=12):
                   optimizer='adam',
                   metrics=['accuracy'])
     return model
+
+def word_counts(x, pipeline=en):
+    """
+
+    :param x:
+    :param pipeline:
+    :return:
+    """
+    count = 0
+    doc = pipeline(x)
+    for sentence in doc.sentences:
+        for token in sentence.tokens:
+            if token.text.lower() not in stopwords.stopwords('en'):
+                count += 1
+    return count
+
+
