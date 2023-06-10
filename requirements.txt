@@ -1,6 +1,3 @@
-joblib
-matplotlib
-scikit-learn
-scipy
-seaborn
-xgboost
+pandas
+stanza
+stopwordsiso

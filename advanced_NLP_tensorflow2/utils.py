@@ -1,10 +1,11 @@
+import pandas as pd
 import re
 import stopwordsiso as stopwords
-import stanfordnlp as snlp
+import stanza as snlp
 import tensorflow as tf
 
 # tokenize processor from stanfordnlp
-en = snlp.Pipeline(lang='en', processors='tokenize')
+en = snlp.Pipeline(lang='en', download_method=None, processors=['tokenize', 'pos'])
 
 def message_length(x):
     """
@@ -65,5 +66,50 @@ def word_counts(x, pipeline=en):
             if token.text.lower() not in stopwords.stopwords('en'):
                 count += 1
     return count
+
+
+def word_counts_v2(x, pipeline=en):
+    """
+
+    :param x:
+    :param pipeline:
+    :return:
+    """
+    doc = pipeline(x)
+    tot_word_count = 0
+    no_punct = 0
+    punct = 0
+    for sentence in doc.sentences:
+        tot_word_count += len(sentence.tokens)
+        for token in sentence.tokens:
+            if token.text.lower() not in stopwords.stopwords('en'):
+                if token.words[0].upos not in ['PUNCT', 'SYM']:
+                    no_punct += 1
+                else:
+                    punct += 1
+    punct = punct/tot_word_count
+    return pd.Series([no_punct, punct], index=['Words_NoPunct', 'Punct'])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -29,8 +29,10 @@ df = pd.DataFrame(spam_dataset, columns=['Spam', 'Message'])
 df['Length'] = df['Message'].apply(utils.message_length)
 df['Capitals'] = df['Message'].apply(utils.num_capitals)
 df['Punctuation'] = df['Message'].apply(utils.num_punctuation)
-df['Punctuation'] = df['Message'].apply(utils.num_punctuation)
 df['Words'] = df['Message'].apply(utils.word_counts)
+
+df_tmp = df['Message'].apply(utils.word_counts_v2)
+df = pd.concat([df, df_tmp], axis=1)
 df.describe()
 
 df['Spam'].value_counts(normalize=True)
@@ -46,11 +48,11 @@ test['Spam'].value_counts(normalize=True)
 train.reset_index(inplace=True, drop=True)
 test.reset_index(inplace=True, drop=True)
 
-x_train, y_train = train[['Length', 'Capitals', 'Punctuation', 'Words']], train[['Spam']]
-x_test, y_test = test[['Length', 'Capitals', 'Punctuation', 'Words']], test[['Spam']]
+x_train, y_train = train[['Length', 'Capitals', 'Punctuation', 'Words', 'Words_NoPunct', 'Punct']], train[['Spam']]
+x_test, y_test = test[['Length', 'Capitals', 'Punctuation', 'Words', 'Words_NoPunct', 'Punct']], test[['Spam']]
 
 # Modeling normalized data
-model = utils.make_model(input_dims=4)
+model = utils.make_model(input_dims=6)
 model.fit(x_train, y_train, epochs=10, batch_size=10)
 
 model.evaluate(x_test, y_test)
