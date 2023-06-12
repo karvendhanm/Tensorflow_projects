@@ -28,9 +28,24 @@ query.toarray()
 
 cosine_similarity(X, query)
 
-# tfidf vectorizer and transformer.
+# tfidf transformer.
+# tfidf transformer needs the output of CountVectorizer as input or count matrix as input.
 # use_idf = False gives us normalized term frequency.
-tfidf_transform = TfidfTransformer(use_idf=False)
-X_tf = tfidf_transform.fit_transform(X)
+tfidf_transform_tf = TfidfTransformer(use_idf=False)
+X_tf = tfidf_transform_tf.fit_transform(X)
 X_tf.toarray()
+
+tf_idf_transform_idf = TfidfTransformer(smooth_idf=False)
+X_idf = tf_idf_transform_idf.fit_transform(X)
+X_idf.toarray()
+
+df_tfidf_transform = pd.DataFrame(X_idf.toarray(), columns=vectorizer.get_feature_names_out())
+
+# tfidf vectorizer
+tfidf_vectorizer = TfidfVectorizer()
+vec = tfidf_vectorizer.fit_transform(corpus)
+vec.toarray()
+
+
+
 
