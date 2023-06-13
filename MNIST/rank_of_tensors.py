@@ -62,3 +62,18 @@ digit = train_images[4]
 import matplotlib.pyplot as plt
 plt.imshow(digit, cmap=plt.cm.binary)
 plt.show()
+
+# tensor slicing
+arr_ = np.array([
+    [1, 2, 3, 4],
+    [1, 2, 3, 4],
+    [1, 2, 3, 4],
+    [1, 2, 3, 4]
+])
+
+arr_.shape
+arr_.ndim
+
+arr_[:, :]
+arr_[2:, 2:]
+arr_[1:-1, 1:-1]
