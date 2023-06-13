@@ -45,3 +45,20 @@ x = np.array([
 ])
 x.shape
 x.ndim
+
+x.dtype
+
+
+from tensorflow.keras.datasets import mnist
+(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+
+train_images.ndim
+train_images.shape
+train_images.dtype
+
+# displaying the fifth image
+digit = train_images[4]
+
+import matplotlib.pyplot as plt
+plt.imshow(digit, cmap=plt.cm.binary)
+plt.show()
