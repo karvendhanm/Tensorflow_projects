@@ -74,6 +74,16 @@ arr_ = np.array([
 arr_.shape
 arr_.ndim
 
+# slicing in first axis
+arr_[2:3]
+
+# equivalent to
+arr_[2:3, :]
+arr_[2:3, 0:4]
+
 arr_[:, :]
 arr_[2:, 2:]
 arr_[1:-1, 1:-1]
+
+# element-wise maximum of array elements
+np.maximum(arr_, 0.)
