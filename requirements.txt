@@ -1,3 +1,6 @@
+matplotlib
 pandas
 stanza
 stopwordsiso
+scikit-learn
+gensim
