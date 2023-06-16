@@ -48,7 +48,6 @@ Z = np.dot(X, Y)
 def naive_dot_product_between_matrices(X, Y):
 
     assert (len(X.shape)) == 2
-    for i in range(x.shape[0]):
     assert (len(X.shape)) == (len(Y.shape))
     assert X.shape[1] == Y.shape[0]
 
