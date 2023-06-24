@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+# creating a naive dense class using tensorflow, without the aid of keras.
 class NaiveDense:
     def __init__(self, input_size, output_size, activation):
         self.activation = activation
@@ -9,7 +10,7 @@ class NaiveDense:
         self.w = tf.Variable(w_initial_value)
 
         b_shape = (output_size,)
-        b_initial_value = tf.zeroes(b_shape)
+        b_initial_value = tf.zeros(b_shape)
         self.b = tf.Variable(b_initial_value)
 
     def __call__(self, inputs):
@@ -18,3 +19,22 @@ class NaiveDense:
     @property
     def weights(self):
         return self.w, self.b
+
+# implementing a simple sequential class in tensorflow, without the aid of keras.
+class NaiveSequential:
+    def __init__(self, layers):
+        self.layers = layers
+
+    def __call__(self, inputs):
+        x = inputs
+        for layer in self.layers:
+            x = layer(x)
+        return x
+
+    @property
+    def weights(self):
+        weights = []
+        for layer in self.layers:
+            weights += layer.weights
+        return weights
+
