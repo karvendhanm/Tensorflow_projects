@@ -48,3 +48,29 @@ print(e)
 e *= d
 print(e)  # this is element-wise multiplication
 
+
+# gradient tape
+input_var = tf.Variable(initial_value=3.)
+input_var.shape
+
+with tf.GradientTape() as tape:
+    result = tf.sqrt(input_var)
+gradient = tape.gradient(result, input_var)
+
+# gradient tape watches only trainable variables by default. tf.Variable(initial_value)
+# if we need the gradient tape to watch any other tensor, we need to invoke watch
+input_var = tf.constant(value=3.)
+with tf.GradientTape() as tape:
+    tape.watch(input_var)
+    result = tf.sqrt(input_var)
+gradient = tape.gradient(result, input_var)
+
+# second-order gradient
+time = tf.Variable(initial_value = 0.)
+with tf.GradientTape() as outer_tape:
+    with tf.GradientTape() as inner_tape:
+        position = 4.9 * time ** 2
+    speed = inner_tape.gradient(position, time)
+acceleration = outer_tape.gradient(speed, time)
+
+
