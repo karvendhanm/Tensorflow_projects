@@ -22,7 +22,19 @@ class SimpleDense(keras.layers.Layer):
             y = self.activation(y)
         return y
 
+
+    def __call__(self, inputs):
+        if not self.built:
+            self.build(inputs.shape)
+            self.built = True
+        return self.call(inputs)
+
 my_dense = SimpleDense(units=32, activation=tf.nn.relu)
 input_tensor = tf.ones(shape=(2, 784))
+
+# TODO understand how this call behaves unexpectedly must be understood.
+# how does eager tensor (input_tensor) morph into tensor shape object (input_shape)
+# Also, how this function call the build function and then call function should be understood
 output_tensor = my_dense(input_tensor)
 print(output_tensor.shape)
+
