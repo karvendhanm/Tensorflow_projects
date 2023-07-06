@@ -29,5 +29,13 @@ def vectorize_sequences(sequences, dimension=10000):
     :param dimension:
     :return:
     """
+    results = np.zeros(shape=(len(sequences), dimension))
+    for row, sequence in enumerate(sequences):
+        for col in sequence:
+            results[row, col] = 1
+    return results
+X_train = vectorize_sequences(train_data)
+X_test = vectorize_sequences(test_data)
+
 
 
