@@ -1,6 +1,9 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import operator
 
+from tensorflow import keras
+from tensorflow.keras import layers
 from tensorflow.keras.datasets import imdb
 
 (train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=10000)
@@ -36,6 +39,63 @@ def vectorize_sequences(sequences, dimension=10000):
     return results
 X_train = vectorize_sequences(train_data)
 X_test = vectorize_sequences(test_data)
+
+y_train = np.asarray(train_labels).astype('float32')
+y_test = np.asarray(test_labels).astype('float32')
+
+# build the model
+model = keras.Sequential([
+    layers.Dense(16, activation='relu'),
+    layers.Dense(16, activation='relu'),
+    layers.Dense(1, activation='sigmoid')
+])
+
+# choose loss function, optimizer and metrics
+model.compile(optimizer='rmsprop',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+X_val = X_train[:10000]
+partial_X_train = X_train[10000:]
+y_val = y_train[:10000]
+partial_y_train = y_train[10000:]
+
+history = model.fit(x=partial_X_train, y=partial_y_train, batch_size=512,
+                    epochs=20, validation_data=(X_val, y_val))
+
+# history object has a member history containing data about everything that happened
+# during training
+history_dict = history.history
+loss_values = history_dict['loss']
+val_loss_values = history_dict['val_loss']
+epochs = range(1, len(loss_values)+1)
+plt.plot(epochs, loss_values, "bo", label='Training loss')
+plt.plot(epochs, val_loss_values, 'b', label='Validation loss')
+plt.title('Training and validation loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
+
+plt.clf() # clears the figure
+acc = history_dict['accuracy']
+val_acc = history_dict['val_accuracy']
+plt.plot(epochs, acc, 'bo', label='Training acc')
+plt.plot(epochs, val_acc, 'b', label='Validation acc')
+plt.title('Training and Validation accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+
+
 
 
 
