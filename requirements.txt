@@ -4,3 +4,4 @@ stanza
 stopwordsiso
 scikit-learn
 gensim
+umap-learn
