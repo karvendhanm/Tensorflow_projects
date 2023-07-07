@@ -1,3 +1,4 @@
+import copy
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -87,22 +88,57 @@ training_accuracy = history_dict['accuracy']
 validation_accuracy = history_dict['val_accuracy']
 epochs = range(1, len(training_loss) + 1)
 
-fig, axes = plt.subplots(1, 2, figsize=(10, 8))
+fig, axes = plt.subplots(1, 2, figsize=(15, 7))
 axes = axes.flatten()
 axes[0].plot(epochs, training_loss, 'bo', label='Training loss')
 axes[0].plot(epochs, validation_loss, 'b', label='Validation loss')
 axes[0].set_xlabel('Epochs')
 axes[0].set_ylabel('Loss')
+axes[0].set_xticks(epochs)
+axes[0].grid()
+axes[0].set_title('training loss vs validation loss')
 axes[0].legend()
 axes[1].plot(epochs, training_accuracy, 'bo', label='Training acc')
 axes[1].plot(epochs, validation_accuracy, 'b', label='Validation acc')
 axes[1].set_xlabel('Epochs')
 axes[1].set_ylabel('Accuracy')
+axes[1].set_title('training accuracy vs validation accuracy')
 axes[1].legend()
+axes[1].grid()
+axes[1].set_xticks(epochs)
 plt.savefig('./data/images/reuters.png')
 
+# by scrutnizing the plots it looks like the model starts overfitting at epoch 9.
+# lets refit the model with 9 epochs.
 
+# model architecture
+model = keras.Sequential([
+    layers.Dense(64, activation='relu'),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(46, activation='softmax')  # this is a multi-class classification with 46 labels
+])
 
+model.compile(optimizer='rmsprop',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
 
+history = model.fit(x=partial_X_train, y=partial_y_train, batch_size=512, epochs=9, validation_data=(X_val, y_val))
+results = model.evaluate(X_test, y_test)
+print(results)
+
+# establishing a baseline by building a random classifier
+test_labels_copy = copy.copy(test_labels)
+np.random.shuffle(test_labels_copy)
+hits_array = test_labels_copy == test_labels
+print(hits_array.mean())
+
+# generating predictions on new data
+predictions = model.predict(X_test)
+predictions[0].shape
+np.sum(predictions[0])
+
+predictions[0]
+# the class with the highest probability
+np.argmax(predictions[0])
 
 
