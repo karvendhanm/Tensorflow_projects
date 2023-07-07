@@ -1,6 +1,9 @@
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import operator
+
+matplotlib.use('agg')
 
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -76,6 +79,7 @@ plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend()
 plt.show()
+plt.savefig('./data/image.png')
 
 plt.clf() # clears the figure
 acc = history_dict['accuracy']
