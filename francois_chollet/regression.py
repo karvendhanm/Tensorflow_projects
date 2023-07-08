@@ -1,5 +1,6 @@
 # regression model
 import keras
+import numpy as np
 
 from tensorflow.keras import layers
 from tensorflow.keras.datasets import boston_housing
@@ -40,6 +41,42 @@ def build_model():
 
     model.compile(optimizer='rmsprop', loss='mse', metrics=['mae'])
     return model
+
+
+"""
+since the training data 400 odd samples, splitting a validation set would from this, will result
+in high variance. solution: use k-fold cross validation
+"""
+k = 4 # typically the number of splits in 4 or 5.
+num_val_samples = len(train_data) // k
+num_epochs = 100
+all_scores = []
+for i in range(k):
+    print(f'processing fold #{i}')
+    val_data = train_data[i * num_val_samples : (i + 1) * num_val_samples]
+    val_target = train_targets[i * num_val_samples : (i + 1) * num_val_samples]
+    partial_train_data = np.concatenate(
+        [train_data[:i * num_val_samples],
+         train_data[(i + 1) * num_val_samples:]],
+        axis=0)
+    partial_train_targets = np.concatenate(
+        [train_targets[:i * num_val_samples],
+         train_targets[(i + 1) * num_val_samples:]],
+        axis=0)
+    model = build_model()
+    # train the model in silent mode. verbose=0
+    model.fit(x=partial_train_data, y=partial_train_targets, batch_size=16, epochs=num_epochs, verbose=0)
+    val_mse, val_mae = model.evaluate(val_data, val_target, verbose=0)
+    all_scores.append(val_mae)
+
+print(all_scores)
+print(np.mean(all_scores))
+
+
+
+
+
+
 
 
 
