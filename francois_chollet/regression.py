@@ -1,9 +1,13 @@
 # regression model
 import keras
+import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 
 from tensorflow.keras import layers
 from tensorflow.keras.datasets import boston_housing
+
+matplotlib.use('agg')
 
 # loading the data
 (train_data, train_targets), (test_data, test_targets) = boston_housing.load_data()
@@ -71,6 +75,53 @@ for i in range(k):
 
 print(all_scores)
 print(np.mean(all_scores))
+
+"""
+increasing the epochs to 500 and few other changes
+"""
+
+k = 4  # typically the number of splits in 4 or 5.
+num_val_samples = len(train_data) // k
+num_epochs = 500
+all_mae_history = []
+for i in range(k):
+    print(f'processing fold #{i}')
+    val_data = train_data[i * num_val_samples: (i + 1) * num_val_samples]
+    val_targets = train_targets[i * num_val_samples: (i + 1) * num_val_samples]
+    partial_train_data = np.concatenate(
+        [train_data[:i * num_val_samples],
+         train_data[(i + 1) * num_val_samples:]],
+        axis=0)
+    partial_train_targets = np.concatenate(
+        [train_targets[:i * num_val_samples],
+         train_targets[(i + 1) * num_val_samples:]],
+        axis=0)
+    model = build_model()
+    # train the model in silent mode. verbose=0
+    history = model.fit(x=partial_train_data, y=partial_train_targets,
+              batch_size=16, epochs=num_epochs, verbose=0,
+              validation_data=(val_data, val_targets))
+    mae_history = history.history['val_mae']
+    all_mae_history.append(mae_history)
+
+# compute the average of the per-epoch MAE scores of all the k-folds.
+average_mae_history = [np.mean([x[i] for x in all_mae_history]) for i in range(num_epochs)]
+
+# lets plot it out
+plt.plot(range(1, len(average_mae_history)+1), average_mae_history)
+plt.xlabel('Epochs')
+plt.ylabel('Validation MAE')
+plt.savefig('./data/images/regression_MAE_per_epoch.png')
+plt.clf()
+
+# first 10 values dominate. so lets omit them and plot again
+truncated_mae_history = average_mae_history[10:]
+plt.plot(range(1, len(truncated_mae_history)+1), truncated_mae_history)
+plt.xlabel('Epochs')
+plt.ylabel('Validation MAE')
+plt.savefig('./data/images/truncated_regression_MAE_per_epoch.png')
+
+
 
 
 
