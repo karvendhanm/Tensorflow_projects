@@ -108,21 +108,30 @@ for i in range(k):
 average_mae_history = [np.mean([x[i] for x in all_mae_history]) for i in range(num_epochs)]
 
 # lets plot it out
+plt.figure()
 plt.plot(range(1, len(average_mae_history)+1), average_mae_history)
 plt.xlabel('Epochs')
 plt.ylabel('Validation MAE')
 plt.savefig('./data/images/regression_MAE_per_epoch.png')
-plt.clf()
+
 
 # first 10 values dominate. so lets omit them and plot again
+plt.figure()
 truncated_mae_history = average_mae_history[10:]
 plt.plot(range(1, len(truncated_mae_history)+1), truncated_mae_history)
 plt.xlabel('Epochs')
 plt.ylabel('Validation MAE')
 plt.savefig('./data/images/truncated_regression_MAE_per_epoch.png')
 
+# using the whole of the training data.
+model = build_model()
+model.fit(x=train_data, y=train_targets, epochs=130, batch_size=16, verbose=0)
+test_mse_score, test_mae_acore = model.evaluate(test_data, test_targets)
 
+print(test_mae_acore)
 
+predictions = model.predict(test_data)
+predictions[0]
 
 
 
