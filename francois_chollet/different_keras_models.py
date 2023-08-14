@@ -47,10 +47,11 @@ model_v1.add(layers.Dense(10, activation='softmax'))
 model_v1.weights
 model_v1.summary()
 
+# the Functional API
+inputs = keras.Input(shape=(3,), name='my_input')
+features = layers.Dense(64, activation='relu')(inputs)
+outputs = layers.Dense(10, activation='softmax')(features)
+model = keras.Model(inputs=inputs, outputs=outputs)
 
-
-
-
-
-
-
+model.weights
+model.summary()
