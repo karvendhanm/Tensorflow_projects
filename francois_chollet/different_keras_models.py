@@ -49,9 +49,67 @@ model_v1.summary()
 
 # the Functional API
 inputs = keras.Input(shape=(3,), name='my_input')
+
+# inputs is a symbolic tensor
+inputs.shape
+
+inputs.dtype
+
 features = layers.Dense(64, activation='relu')(inputs)
 outputs = layers.Dense(10, activation='softmax')(features)
 model = keras.Model(inputs=inputs, outputs=outputs)
 
 model.weights
 model.summary()
+
+# Functional API - multi-input, multi-output models.
+# model has 3 inputs and 2 outputs
+
+# inputs
+# 1) title of the ticket (text input)
+# 2) the text body of the ticket (text input)
+# 3) tags added by the user (categorical input assumed to be one-hot encoded)
+
+# outputs
+# 1) priority score of the ticket between 0 and 1
+# 2) the department that should handle the ticket
+
+vocabulary_size = 10000
+num_tags = 100
+num_departments = 4
+
+title = keras.Input(shape=(vocabulary_size,), name='title')
+text_body = keras.Input(shape=(vocabulary_size,), name='text_body')
+tags = keras.Input(shape=(num_tags,), name='tags')
+
+features = layers.Concatenate()(title, text_body, tags)
+features = layers.Dense(64, activation='relu')(features)
+
+priority = layers.Dense(1, activation='sigmoid', name='priority')(features)
+department = layers.Dense(num_departments, activation='softmax')(features)
+
+model = keras.Model(inputs=(title, text_body, tags), outputs=(priority, department))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
