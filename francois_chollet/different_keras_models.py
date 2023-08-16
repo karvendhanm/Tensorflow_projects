@@ -91,7 +91,6 @@ priority = layers.Dense(1, activation='sigmoid', name='priority')(features)
 department = layers.Dense(num_department, activation='softmax', name='department')(features)
 model = keras.Model(inputs=[title, text_body, tags], outputs=[priority, department])
 
-
 model.weights
 model.summary()
 
@@ -113,30 +112,17 @@ model.fit(x=[title_data, text_body_data, tags_data],
           y=[priority_data, department_data],
           epochs=1)
 model.evaluate([title_data, text_body_data, tags_data], [priority_data, department_data])
-priority_preds, department_data = model.predict([title_data, text_body_data, tags_data])
+priority_preds, department_preds = model.predict([title_data, text_body_data, tags_data])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# leveraging the names of the input.
+model.compile(optimizer='rmsprop',
+              loss={'priority': 'mean_squared_error', 'department': 'categorical_crossentropy'},
+              metrics={'priority': ['mean_absolute_error'], 'department': ['accuracy']})
+model.fit(x={'title': title_data, 'text_body': text_body_data, 'tags': tags_data},
+          y={'priority': priority_data, 'department': department_data},
+          epoch=1)
+model.evaluate(x={'title': title_data, 'text_body': text_body_data, 'tags': tags_data},
+               y={'priority': priority_data, 'department': department_data},
+               epoch=1)
+priority_preds, department_preds = model.predict({'title': title_data, 'text_body': text_body_data,
+                                                  'tags': tags_data})
