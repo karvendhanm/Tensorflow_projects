@@ -93,6 +93,17 @@ model = keras.Model(inputs=[title, text_body, tags], outputs=[priority, departme
 
 # graphing/plotting the structure of the model
 keras.utils.plot_model(model, 'ticket_classifier.png')
+keras.utils.plot_model(model, 'ticket_classifier_with_shape_info.png', show_shapes=True)
+
+# list of layers that make up the model.
+model.layers
+
+# for each layer we can query the input and the output
+model.layers[0].input   # pass through layer
+model.layers[0].output  # pass through layer
+
+model.layers[3].input
+model.layers[3].output
 
 model.weights
 model.summary()
@@ -128,5 +139,30 @@ model.evaluate(x={'title': title_data, 'text_body': text_body_data, 'tags': tags
                y={'priority': priority_data, 'department': department_data})
 priority_preds, department_preds = model.predict({'title': title_data, 'text_body': text_body_data,
                                                   'tags': tags_data})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
