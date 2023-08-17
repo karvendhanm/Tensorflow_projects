@@ -17,12 +17,12 @@ model = keras.Sequential([
     layers.Dense(10, activation='softmax', name='second_layer')
 ], name='my sequential model')
 
-model.weights
+# model.weights
 
 # building the model
 model.build(input_shape=(None, 3))
 
-model.weights
+# model.weights
 
 model.summary()
 
@@ -91,6 +91,9 @@ priority = layers.Dense(1, activation='sigmoid', name='priority')(features)
 department = layers.Dense(num_department, activation='softmax', name='department')(features)
 model = keras.Model(inputs=[title, text_body, tags], outputs=[priority, department])
 
+# graphing/plotting the structure of the model
+keras.utils.plot_model(model, 'ticket_classifier.png')
+
 model.weights
 model.summary()
 
@@ -120,9 +123,10 @@ model.compile(optimizer='rmsprop',
               metrics={'priority': ['mean_absolute_error'], 'department': ['accuracy']})
 model.fit(x={'title': title_data, 'text_body': text_body_data, 'tags': tags_data},
           y={'priority': priority_data, 'department': department_data},
-          epoch=1)
+          epochs=1)
 model.evaluate(x={'title': title_data, 'text_body': text_body_data, 'tags': tags_data},
-               y={'priority': priority_data, 'department': department_data},
-               epoch=1)
+               y={'priority': priority_data, 'department': department_data})
 priority_preds, department_preds = model.predict({'title': title_data, 'text_body': text_body_data,
                                                   'tags': tags_data})
+
+
