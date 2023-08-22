@@ -17,7 +17,6 @@ class DenseLayer(keras.layers.Layer):
         self.units = units
         self.activation = activation
 
-
     def build(self, input_shape):
         """
 
@@ -26,8 +25,7 @@ class DenseLayer(keras.layers.Layer):
         """
         input_dim = input_shape[-1]
         self.W = self.add_weight(shape=(input_dim, self.units), initializer='random_normal')
-        self.b = self.add_weight(shape=(self.units, ), initializer='zeros')
-
+        self.b = self.add_weight(shape=(self.units,), initializer='zeros')
 
     def call(self, inputs):
         """
@@ -40,12 +38,14 @@ class DenseLayer(keras.layers.Layer):
             y = self.activation(y)
         return y
 
+    def __call__(self, inputs):
+        if not self.built:
+            self.build(inputs.shape)
+            self.built = True
+        return self.call(inputs)
+
 
 denselayer = DenseLayer(32, tf.nn.relu)
 input_tensor = tf.ones(shape=(2, 784))
 output_tensor = denselayer(input_tensor)
 print(output_tensor.shape)
-
-
-
-
