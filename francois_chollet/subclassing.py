@@ -74,6 +74,8 @@ title_data = np.random.randint(0, 2, size=(num_samples, vocabulary_size))
 text_body_data = np.random.randint(0, 2, size=(num_samples, vocabulary_size))
 tags_data = np.random.randint(0, 2, size=(num_samples, num_tags))
 
+priority_data = np.random.random(size=(num_samples, 1))
+department_data = np.random.randint(0, 2, size=(num_samples, num_department))
 
 
 class CustomerTicketModel(keras.Model):
@@ -105,7 +107,19 @@ class CustomerTicketModel(keras.Model):
         return priority, department
 
 model = CustomerTicketModel(num_departments=num_department)
-priority, department = model({'title':title_data, 'text_body':text_body_data, 'tags':tags_data})
+# priority, department = model({'title':title_data, 'text_body':text_body_data, 'tags':tags_data})
+
+model.compile(optimizer='rmsprop',
+              loss=['mean_squared_error', 'categorical_crossentropy'],
+              metrics=[['mean_absolute_error'], ['accuracy']])
+
+model.fit(x={'title': title_data, 'text_body': text_body_data, 'tags': tags_data},
+          y=[priority_data, department_data],
+          epochs=1)
+model.evaluate(x={'title': title_data, 'text_body': text_body_data, 'tags': tags_data},
+               y=[priority_data, department_data])
+priority_preds, department_preds = model.predict({'title': title_data, 'text_body': text_body_data,
+                                                  'tags': tags_data})
 
 
 
