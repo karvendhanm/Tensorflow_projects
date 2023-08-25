@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from tensorflow import keras
@@ -30,14 +31,40 @@ callbacks_list = [
     keras.callbacks.ModelCheckpoint(filepath='checkpoint_path.keras', monitor='val_loss', save_best_only=True)
 ]
 
-model.compile(optimizer='rmsprop', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(x=train_images, y=train_labels, epochs=20,
-          callbacks=callbacks_list,
-          validation_data=(val_images, val_labels))
+# model.compile(optimizer='rmsprop', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+# model.fit(x=train_images, y=train_labels, epochs=20,
+#           callbacks=callbacks_list,
+#           validation_data=(val_images, val_labels))
 
 # saving the model manually
 model.save('my_checkpoint_path')
 
 # loading the model
 model = keras.models.load_model('checkpoint_path.keras')
+
+# writing your own callbacks:
+class LossHistory(keras.callbacks.Callback):
+    def on_train_begin(self, logs):
+        self.per_batch_losses = []
+
+    def on_batch_end(self,  batch, logs):
+        self.per_batch_losses.append(logs.get('loss'))
+
+    def on_epoch_end(self, epoch, logs):
+        plt.clf()
+        plt.plot(range(len(self.per_batch_losses)), self.per_batch_losses, label='training loss for each batch')
+        plt.xlabel(f'Batch (epoch: {epoch})')
+        plt.ylabel('Loss')
+        plt.legend()
+        plt.savefig(f'plot at epoch_{epoch}')
+        self.per_batch_losses = []
+
+model = get_mnist_model()
+model.compile(optimizer='rmsprop', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.fit(x=train_images, y=train_labels, epochs=10,
+          callbacks=[LossHistory()],
+          validation_data=(val_images, val_labels))
+
+
+
 
