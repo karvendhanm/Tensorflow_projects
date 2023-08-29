@@ -14,11 +14,31 @@ test_data = test_data.reshape(10000, 28 * 28).astype('float32') / 255
 validation_set_data, train_set_data = train_data[:10000], train_data[10000:]
 validation_set_labels, train_set_labels = train_labels[:10000], train_labels[10000:]
 
-# building a sequential api.
-model = keras.Sequential([
-    layers.Dense(512, activation='relu', name='first_hidden_layer'),
-    layers.Dense(10, activation='softmax', name='output_layer')
-], name='my_model')
+# ##########
+# # SEQUENTIAL API STARTS
+# model = keras.Sequential([
+#     layers.Dense(512, activation='relu', name='first_hidden_layer'),
+#     layers.Dense(10, activation='softmax', name='output_layer')
+# ], name='my_model')
+# # SEQUENTIAL API ENDS
+# #########
+
+# ##########
+# FUNCTIONAL API STARTS
+# using functional api
+inputs = keras.Input(shape=(28 * 28))
+features = layers.Dense(512, activation='relu', name='first_hidden_layer')(inputs)
+outputs = layers.Dense(10, activation='softmax', name='output_layer')(features)
+model = keras.Model(inputs=inputs, outputs=outputs)
+
+# model.summary()
+# model.weights
+
+# plotting model structure
+keras.utils.plot_model(model, show_shapes=True, to_file='./model_structure/mnist.png')
+# FUNCTIONAL API ENDS
+# ##########
+
 
 # to use tensorboard seperately:
 # tensorboard is a form of callback which we need to use during fit
@@ -63,3 +83,4 @@ plt.plot(epochs, validation_accuracy, color='blue', label='validation accuracy',
 plt.xlabel('epochs')
 plt.legend()
 plt.show()
+
