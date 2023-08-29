@@ -1,3 +1,5 @@
+# In this file mnist dataset has been modeled using NN (sequential and functional APIs)
+
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
