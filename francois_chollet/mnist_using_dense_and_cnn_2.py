@@ -28,3 +28,5 @@ model.compile(optimizer='rmsprop',
               metrics=['accuracy']
               )
 model.fit(x=train_data, y=train_labels, epochs=30, batch_size=2048)
+test_loss, test_accuracy = model.evaluate(test_data, test_labels)
+
