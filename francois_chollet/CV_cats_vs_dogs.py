@@ -116,7 +116,7 @@ plt.show()
 
 test_model = keras.models.load_model('./model_checkpoints/convnet_from_scratch.keras')
 test_loss, test_acc = test_model.evaluate(test_dataset)
-print(f'the test accuracy is: {test_acc}')
+print(f'the test accuracy is: {test_acc:.3f}')
 
 # the code below is not working
 # plt.figure(figsize=(10, 10))
