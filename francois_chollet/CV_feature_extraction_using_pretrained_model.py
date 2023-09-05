@@ -131,3 +131,4 @@ test_loss, test_acc = test_model.evaluate(test_features, test_labels)
 print(f'the test accuracy is: {test_acc:.3f}')
 
 # method-2: extend the convolution base layer to add the densely connect layer at the end/head.
+# this part of the code is present in "CV_transfer_learning_VGG16_with_data_augmentation.py".
