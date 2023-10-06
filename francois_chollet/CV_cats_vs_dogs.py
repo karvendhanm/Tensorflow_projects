@@ -29,7 +29,7 @@ def make_subset(subset_name, start_index, stop_index):
         fnames = [f'{category}.{i}.jpg' for i in range(start_index, stop_index)]
 
         for fname in fnames:
-            shutil.copy(old_dir / fname, new_base_dir / subset_name / category / fname)
+            shutil.copyfile(old_dir / fname, new_base_dir / subset_name / category / fname)
 
     return None
 

@@ -1,6 +1,5 @@
 # Computer vision - Cats vs. Dogs
 import matplotlib.pyplot as plt
-import numpy
 import os
 import pathlib
 import shutil
@@ -40,7 +39,7 @@ make_subset(subset_name='test', start_index=1500, stop_index=2500)
 
 # building a convolutional neural network using functional API
 inputs = keras.Input(shape=(180, 180, 3))
-x = layers.Rescaling(1./255)(inputs)
+x = layers.Rescaling(1. / 255)(inputs)
 x = layers.Conv2D(filters=32, kernel_size=3, activation='relu')(x)
 x = layers.MaxPooling2D(pool_size=2)(x)
 x = layers.Conv2D(filters=64, kernel_size=3, activation='relu')(x)
@@ -66,30 +65,39 @@ for data_batch, labels_batch in train_dataset:
     print(f'labels batch shape: {labels_batch.shape}')
     break
 
-# lets
+# let us fit the model on our dataset.
+callbacks = [
+    keras.callbacks.ModelCheckpoint(
+        filepath='./model_checkpoints/convnet_from_scratch.keras',
+        save_best_only=True,
+        monitor='val_loss')
+]
 
+history = model.fit(train_dataset,
+                    epochs=30,
+                    validation_data=validation_dataset,
+                    callbacks=callbacks)
 
+training_loss = history.history['loss']
+training_accuracy = history.history['accuracy']
+val_loss = history.history['val_loss']
+val_accuracy = history.history['val_accuracy']
+epochs = list(range(1, len(training_loss) + 1))
 
+# fig, (ax1, ax2) = plt.subplots(1, 2)
+# ax1.plot(epochs, training_loss, 'bo', label="training loss")
+# ax1.plot(epochs, val_loss, 'b', label="validation loss")
+# ax1.set_title('training loss vs. validation loss')
+# ax1.legend()
+# ax2.plot(epochs, training_accuracy, 'bo', label="training accuracy")
+# ax2.plot(epochs, val_accuracy, 'b', label="validation accuracy")
+# ax2.set_title('training accuracy vs. validation accuracy')
+# ax2.legend()
+# plt.savefig('./plots/CV_cats_and_dogs.png')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+test_model = keras.models.load_model('./model_checkpoints/convnet_from_scratch.keras')
+test_loss, test_accuracy = test_model.evaluate(test_dataset)
+print(f'the test accuracy: {test_accuracy:.3f}')
 
 
 
