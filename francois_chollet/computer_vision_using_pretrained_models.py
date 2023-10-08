@@ -148,9 +148,7 @@ ax2.set_title('training accuracy vs. validation accuracy')
 ax2.legend()
 plt.savefig('./plots/pretrained_model_with_dense_classifier_built_from_scratch.png')
 
-test_loss, test_accuracy = model.evaluate(x=test_features, y=test_labels,
-                                          batch_size=32)
-print(f'the test accuracy is: {test_accuracy}')
+
 
 
 

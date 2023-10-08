@@ -79,7 +79,7 @@ model.compile(optimizer='rmsprop',
 
 callback_list = [
     keras.callbacks.ModelCheckpoint(
-        filepath='./model_checkpoints/finetuning_pretrained_model.keras',
+        filepath='./model_checkpoints/before_finetuning_pretrained_model.keras',
         save_best_only=True,
         monitor='val_loss'
     )
@@ -90,24 +90,34 @@ history = model.fit(train_dataset,
                     validation_data=validation_dataset,
                     callbacks=callback_list)
 
-model = keras.models.load_model('./model_checkpoints/finetuning_pretrained_model.keras')
+model = keras.models.load_model('./model_checkpoints/before_finetuning_pretrained_model.keras')
+test_loss, test_accuracy = model.evaluate(test_dataset)
+print(f'the test accuracy before fine tuning the pre-trained model: {test_accuracy}')
 
+model.summary()
+model.layers[-5].summary()
+
+# unfreezing the top four layers of the convolutional base of the pre-trained model(VGG16).
+# the next 4 lines doesn't seem to work.
 conv_base.summary()
 conv_base.trainable = True
 for layer in conv_base.layers[:-4]:
     layer.trainable = False
 
+model.layers[-5].trainable = True
+for model_layer in model.layers[-5].layers[:-4]:
+    model_layer.trainable = False
+model.summary()
 
 # given that we have unfreezed the top 4 layers of the convolutional base,
-# lets train the model again
-model.summary()
+# lets compile the model with low learning rate and train the model again
 model.compile(loss='binary_crossentropy',
               metrics=['accuracy'],
               optimizer=keras.optimizers.RMSprop(learning_rate=1e-5))
 
 callback_list = [
     keras.callbacks.ModelCheckpoint(
-        filepath='./model_checkpoints/finetuning_pretrained_model.keras',
+        filepath='./model_checkpoints/after_finetuning_pretrained_model.keras',
         save_best_only=True,
         monitor='val_loss'
     )
@@ -118,7 +128,9 @@ history = model.fit(train_dataset,
                     validation_data=validation_dataset,
                     callbacks=callback_list)
 
-model = keras.models.load_model('./model_checkpoints/finetuning_pretrained_model.keras')
-model.summary()
-
+model = keras.models.load_model('./model_checkpoints/after_finetuning_pretrained_model.keras')
 test_loss, test_accuracy = model.evaluate(test_dataset)
+print(f'the test accuracy after fine tuning the pre-trained model: {test_accuracy}')
+
+model.summary()
+model.layers[-5].weights
