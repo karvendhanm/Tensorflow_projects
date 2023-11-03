@@ -57,10 +57,12 @@ model.summary()
 model.compile(optimizer='rmsprop', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 # defining callbacks
+# using tensorboard in the callbacks
 callbacks_list = [
     keras.callbacks.ModelCheckpoint(filepath='./model_checkpoints/mnist_with_just_1_block.keras',
                                     save_best_only=True,
-                                    monitor='val_loss')
+                                    monitor='val_loss'),
+    keras.callbacks.TensorBoard(log_dir='./tensor_board/mnist_just_1_block')
 ]
 
 history = model.fit(x=train_data,
