@@ -40,9 +40,13 @@ x = layers.MaxPool2D(pool_size=2)(x)
 
 # block 3 (block of conv2d and maxpooling layers)
 x = layers.Conv2D(filters=128, kernel_size=3, activation='relu')(x)
-x = layers.MaxPool2D(pool_size=2)(x)
+# x = layers.MaxPool2D(pool_size=2)(x) removing the last max pooling layer
 # with 3 blocks of  conv2D layer and maxpool2D layer the test accuracy is 98.64 as we double the number
 # of filters in the third block when compared to the second block(128)
+# with 2 blocks of conv2D layer and maxpool2D layer and one more conv2D in the 3rd block (without max.pooling layer)
+# the test accuracy is 99.09 without dropout layer
+# with 2 blocks of conv2D layer and maxpool2D layer and one more conv2D in the 3rd block (without max.pooling layer)
+# the test accuracy is 99.22 without dropout layer. Adding a dropout layer definitely helps
 
 x = layers.Flatten()(x)
 # adding a dropout layer to reduce overfitting
