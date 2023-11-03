@@ -30,25 +30,26 @@ inputs = keras.Input(shape=(28, 28, 1))
 # block 1 (block of conv2d and maxpooling layers)
 x = layers.Conv2D(filters=32, kernel_size=3, activation='relu')(inputs)
 x = layers.MaxPool2D(pool_size=2)(x)
-# with 1 block of conv2D layer and maxpool2D layer the test accuracy is 98.17
+# with 1 block of conv2D layer and maxpool2D layer the test accuracy is 98.11
 
-# # block 2 (block of conv2d and maxpooling layers)
-# x = layers.Conv2D(filters=64, kernel_size=3, activation='relu')(x)
-# x = layers.MaxPool2D(pool_size=2)(x)
-# # with 2 blocks of  conv2D layer and maxpool2D layer the test accuracy is 98.99 even with number of filter
-# # the same as the first layer(32)
-# # with 2 blocks of  conv2D layer and maxpool2D layer the test accuracy is 98.75 as we double the number
-# # of filters in the second block when compared to the first block(64)
-#
-# # block 3 (block of conv2d and maxpooling layers)
-# x = layers.Conv2D(filters=128, kernel_size=3, activation='relu')(x)
-# x = layers.MaxPool2D(pool_size=2)(x)
-# # with 3 blocks of  conv2D layer and maxpool2D layer the test accuracy is 98.73 even with number of filter
-# # the same as the second layer(64)
-# # with 3 blocks of  conv2D layer and maxpool2D layer the test accuracy is 98.85 as we double the number
-# # of filters in the third block when compared to the second block(128
+# block 2 (block of conv2d and maxpooling layers)
+x = layers.Conv2D(filters=64, kernel_size=3, activation='relu')(x)
+x = layers.MaxPool2D(pool_size=2)(x)
+# with 2 blocks of  conv2D layer and maxpool2D layer the test accuracy is 98.89 as we double the number
+# of filters in the second block when compared to the first block(64)
+
+# block 3 (block of conv2d and maxpooling layers)
+x = layers.Conv2D(filters=128, kernel_size=3, activation='relu')(x)
+x = layers.MaxPool2D(pool_size=2)(x)
+# with 3 blocks of  conv2D layer and maxpool2D layer the test accuracy is 98.64 as we double the number
+# of filters in the third block when compared to the second block(128)
 
 x = layers.Flatten()(x)
+# adding a dropout layer to reduce overfitting
+x = layers.Dropout(0.5)(x)
+# adding a dropout layer improved the test accuracy from 98.89 to 99.10 with 2 blocks
+# adding a dropout layer improved the test accuracy from 98.64 to 98.91 with 3 blocks
+
 outputs = layers.Dense(10, activation='softmax')(x)
 model = keras.Model(inputs=inputs, outputs=outputs)
 
@@ -59,10 +60,10 @@ model.compile(optimizer='rmsprop', loss='sparse_categorical_crossentropy', metri
 # defining callbacks
 # using tensorboard in the callbacks
 callbacks_list = [
-    keras.callbacks.ModelCheckpoint(filepath='./model_checkpoints/mnist_with_just_1_block.keras',
+    keras.callbacks.ModelCheckpoint(filepath='./model_checkpoints/mnist_with_just_2_block_dropout.keras',
                                     save_best_only=True,
                                     monitor='val_loss'),
-    keras.callbacks.TensorBoard(log_dir='./tensor_board/mnist_just_1_block')
+    keras.callbacks.TensorBoard(log_dir='./tensor_board/mnist_just_2_block_dropout')
 ]
 
 history = model.fit(x=train_data,
@@ -91,9 +92,9 @@ ax2.plot(epochs, validation_accuracy, 'b', label='validation_accuracy')
 ax2.set_title('training accuracy vs. validation accuracy')
 ax2.grid(True)
 ax2.legend()
-plt.savefig('./plots/mnist_with_just_1_block.png')
+plt.savefig('./plots/mnist_with_just_2_block_dropout.png')
 
-model = keras.models.load_model('./model_checkpoints/mnist_with_just_1_block.keras')
+model = keras.models.load_model('./model_checkpoints/mnist_with_just_2_block_dropout.keras')
 
 # evaluating the model on the test set.
 model.evaluate(x=test_images, y=test_labels)
