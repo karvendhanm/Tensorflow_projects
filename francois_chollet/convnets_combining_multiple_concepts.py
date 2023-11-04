@@ -5,6 +5,14 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from keras.datasets import mnist
 
+"""
+# To implement the following with mnist dataset image classification
+1) Adding dropout layers
+2) Implementing residual connects
+3) Implementing batch nomralization
+4) Implementing data augmentation
+"""
+
 (train_val_images, train_val_labels), (test_images, test_labels) = mnist.load_data()
 train_val_images = train_val_images.reshape((len(train_val_images), 28, 28, 1))
 train_val_images = train_val_images.astype('float32') / 255
@@ -27,33 +35,64 @@ train_labels = train_val_labels[10000:]
 # using functional api
 inputs = keras.Input(shape=(28, 28, 1))
 
+residual = inputs
+
 # block 1 (block of conv2d and maxpooling layers)
-x = layers.Conv2D(filters=32, kernel_size=3, activation='relu')(inputs)
-x = layers.MaxPool2D(pool_size=2)(x)
+x = layers.Conv2D(filters=32, kernel_size=3, activation='relu', padding='same')(inputs)
+x = layers.MaxPool2D(pool_size=2, padding='same')(x)
 # with 1 block of conv2D layer and maxpool2D layer the test accuracy is 98.11
 
+residual = layers.Conv2D(filters=32, kernel_size=1, strides=2)(residual)
+x = layers.add([x, residual])
+
+# implementing residual connects
+# taking the input of a layer or a block and adding it to the output of the block or layer is called
+# residual connection.
+residual = x
+
 # block 2 (block of conv2d and maxpooling layers)
-x = layers.Conv2D(filters=64, kernel_size=3, activation='relu')(x)
-x = layers.MaxPool2D(pool_size=2)(x)
+x = layers.Conv2D(filters=64, kernel_size=3, activation='relu', padding='same')(x)
+x = layers.MaxPool2D(pool_size=2, padding='same')(x)
 # with 2 blocks of  conv2D layer and maxpool2D layer the test accuracy is 98.89 as we double the number
 # of filters in the second block when compared to the first block(64)
 
+residual = layers.Conv2D(filters=64, kernel_size=1, strides=2)(residual)
+x = layers.add([x, residual])
+
+residual = x
+
 # block 3 (block of conv2d and maxpooling layers)
-x = layers.Conv2D(filters=128, kernel_size=3, activation='relu')(x)
+x = layers.Conv2D(filters=128, kernel_size=3, activation='relu', padding='same')(x)
 # x = layers.MaxPool2D(pool_size=2)(x) removing the last max pooling layer
 # with 3 blocks of  conv2D layer and maxpool2D layer the test accuracy is 98.64 as we double the number
 # of filters in the third block when compared to the second block(128)
+
 # with 2 blocks of conv2D layer and maxpool2D layer and one more conv2D in the 3rd block (without max.pooling layer)
 # the test accuracy is 99.09 without dropout layer
+
 # with 2 blocks of conv2D layer and maxpool2D layer and one more conv2D in the 3rd block (without max.pooling layer)
-# the test accuracy is 99.22 without dropout layer. Adding a dropout layer definitely helps
+# the test accuracy is 99.22 with dropout layer. Adding a dropout layer definitely helps
 
-x = layers.Flatten()(x)
+# with 2 blocks of conv2D layer and maxpool2D layer and one more conv2D in the 3rd block (without max.pooling layer)
+# adding the dropout layer even before the flatten layer has increased the test accuracy from 99.22 to 99.47 when
+# compared to adding the dropout layer after the flatten layer.
+
+# with 2 blocks of conv2D layer and maxpool2D layer and one more conv2D in the 3rd block (without max.pooling layer)
+# adding 2 dropout layers before and after the flatten layer has a test accuracy of 99.42. this is bit less
+# when compared to the test accuracy of 99.47 achieved while having a single dropout layer before the flatten layer.
+
+# what happens when we add the dropout layer even before the flattening layer.
 # adding a dropout layer to reduce overfitting
-x = layers.Dropout(0.5)(x)
-# adding a dropout layer improved the test accuracy from 98.89 to 99.10 with 2 blocks
-# adding a dropout layer improved the test accuracy from 98.64 to 98.91 with 3 blocks
+x = layers.MaxPool2D(pool_size=2, padding='same')(x)
 
+residual = layers.Conv2D(128, 1, strides=2)(residual)
+x = layers.add([x, residual])
+
+# using residual connections after a dropout layer
+residual = x
+x = layers.Dropout(0.5)(x)
+x = layers.add([x, residual])
+x = layers.Flatten()(x)
 outputs = layers.Dense(10, activation='softmax')(x)
 model = keras.Model(inputs=inputs, outputs=outputs)
 
