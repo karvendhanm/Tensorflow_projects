@@ -86,3 +86,7 @@ plt.xlabel('epochs')
 plt.legend()
 plt.show()
 
+
+residual = layers.Conv2D(64, 1)(residual)  # 1 x 1 conv2D layer with no activation for linear projection
+x = layers.add([x, residual])
+
