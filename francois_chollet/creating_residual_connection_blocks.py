@@ -41,7 +41,9 @@ def residual_block(inputs, filters, is_pooling=False):
     """
     residual = inputs
     x = layers.Conv2D(filters=filters, kernel_size=3, activation='relu', padding='same')(inputs)
-    x = layers.Conv2D(filters=filters, kernel_size=3, activation='relu', padding='same')(x)
+    x = layers.Conv2D(filters=filters, kernel_size=3, padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
 
     if is_pooling:
         x = layers.MaxPool2D(pool_size=2, padding='same')(x)
@@ -83,7 +85,7 @@ callbacks_list = [
 history = model.fit(x=train_data,
                     y=train_labels,
                     batch_size=512,
-                    epochs=30,
+                    epochs=10,
                     callbacks = callbacks_list,
                     validation_data=(validation_data, validation_labels)
                     )
