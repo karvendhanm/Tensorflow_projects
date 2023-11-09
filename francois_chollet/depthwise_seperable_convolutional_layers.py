@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import os
 import pathlib
 import shutil
 import tensorflow as tf
@@ -57,11 +58,11 @@ for size in (32, 64, 128, 256, 512):
 
     x = layers.BatchNormalization()(x)
     x = layers.Activation('relu')(x)
-    x = layers.SeperableConv2D(size, 3, padding='same', use_bias=False)(x)
+    x = layers.SeparableConv2D(size, 3, padding='same', use_bias=False)(x)
 
     x = layers.BatchNormalization()(x)
-    x = layers.Activation('relu')
-    x = layers.SeperableConv2D(size, 3, padding='same', use_bias=False)(x)
+    x = layers.Activation('relu')(x)
+    x = layers.SeparableConv2D(size, 3, padding='same', use_bias=False)(x)
 
     x = layers.MaxPooling2D(pool_size=3, strides=2, padding='same')(x)
 
@@ -70,11 +71,46 @@ for size in (32, 64, 128, 256, 512):
 
 x = layers.GlobalAveragePooling2D()(x)
 x = layers.Dropout(0.5)(x)
+outputs = layers.Dense(1, activation='sigmoid')(x)
+model = keras.Model(inputs=inputs, outputs=outputs)
 
+callbacks = [
+    keras.callbacks.ModelCheckpoint(
+        filepath='./model_checkpoints/image_classification_using_depthwise_seperable_conv_layers.keras',
+        save_best_only=True,
+        monitor='val_loss')
+]
 
+model.compile(optimizer='rmsprop',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
 
+history = model.fit(train_dataset, validation_data=validation_dataset, epochs=30, callbacks=callbacks)
 
+train_accuracy = history.history['accuracy']
+train_loss = history.history['loss']
+validation_accuracy = history.history['val_accuracy']
+validation_loss = history.history['val_loss']
+epochs = list(range(1, len(train_accuracy)+1))
 
+# plotting the train accuracy
+figs, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 8))
+ax1.plot(epochs, train_loss, 'bo', label='training_loss')
+ax1.plot(epochs, validation_loss, 'b', label='validation_loss')
+ax1.set_title('training loss vs. validation loss')
+ax1.grid(True)
+ax1.legend()
+ax2.plot(epochs, train_accuracy, 'bo', label='training_accuracy')
+ax2.plot(epochs, validation_accuracy, 'b', label='validation_accuracy')
+ax2.set_title('training accuracy vs. validation accuracy')
+ax2.grid(True)
+ax2.legend()
+plt.savefig('./plots/image_classification_using_depthwise_seperable_conv_layers.png')
+
+best_model = keras.models.load_model('./model_checkpoints/'
+                                     'image_classification_using_depthwise_seperable_conv_layers.keras')
+test_loss, test_accuracy = best_model.evaluate(test_dataset)
+print(f'the test accuracy: {test_accuracy:.3f}')
 
 
 
