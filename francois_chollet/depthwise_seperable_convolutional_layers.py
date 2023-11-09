@@ -85,7 +85,7 @@ model.compile(optimizer='rmsprop',
               loss='binary_crossentropy',
               metrics=['accuracy'])
 
-history = model.fit(train_dataset, validation_data=validation_dataset, epochs=30, callbacks=callbacks)
+history = model.fit(train_dataset, validation_data=validation_dataset, epochs=100, callbacks=callbacks)
 
 train_accuracy = history.history['accuracy']
 train_loss = history.history['loss']
