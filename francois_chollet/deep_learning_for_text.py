@@ -27,7 +27,7 @@ class Vectorizer(object):
         return [self.vocabulary.get(token, 1) for token in tokens]
 
     def decode(self, int_sequence):
-        return " ".join([self.inverse_dictionary.get(i, '[UNK') for i in int_sequence])
+        return " ".join([self.inverse_dictionary.get(i, '[UNK]') for i in int_sequence])
 
 dataset = [
     "I write, erase, rewrite",
@@ -40,4 +40,8 @@ obj.make_vocabulary(dataset)
 
 test_sentence = "I write, rewrite, and still write again"
 encoded_sequence = obj.encode(test_sentence)
-obj.decode(encoded_sequence)
+print(obj.decode(encoded_sequence))
+
+# text vectorization uisng keras
+from tensorflow.keras.layers import TextVectorization
+text_vectorization = TextVectorization(output_mode='int')
